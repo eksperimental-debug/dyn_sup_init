@@ -8,8 +8,20 @@ defmodule DynSupInit.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: DynSupInit.Worker.start_link(arg)
-      # {DynSupInit.Worker, arg}
+      # Dynamic supervisor from module DynamicSupervisor
+      {DynamicSupervisor, name: :dyn_sup_a, strategy: :one_for_one},
+
+      # Dynamic supervisor from module child directly
+      {DynSupInit.DynSup1, name: :dyn_sup_b, strategy: :one_for_one},
+
+      # Dynamic supervisor with t:Supervsor.child_spec/0
+      %{
+        id: :dyn_sup_c,
+        start: {DynSupInit.DynSup2, :start_link, [[name: :dyn_sup_c]]}
+      },
+
+      # Supervisor
+      {DynSupInit.Sup1, name: :d}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
